@@ -1,0 +1,309 @@
+schema,question,generated_sql_query
+"
+        CREATE TABLE author (
+            author_id INTEGER PRIMARY KEY,
+            author_name TEXT
+        );
+
+        CREATE TABLE book (
+            book_id INTEGER PRIMARY KEY,
+            book_title TEXT,
+            publication_year INTEGER
+        );
+
+        CREATE TABLE author_book (
+            author_id INTEGER,
+            book_id INTEGER,
+            FOREIGN KEY (author_id) REFERENCES author(author_id),
+            FOREIGN KEY (book_id) REFERENCES book(book_id),
+            PRIMARY KEY (author_id, book_id)
+        );
+        ",Find all books published after 2010.,SELECT book_title FROM book WHERE publication_year > 2010;
+"
+        CREATE TABLE employee (
+            employee_id INTEGER PRIMARY KEY,
+            employee_name TEXT,
+            department TEXT,
+            salary INTEGER
+        );
+
+        CREATE TABLE department (
+            department_id INTEGER PRIMARY KEY,
+            department_name TEXT
+        );
+        ",What is the average salary in the IT department?,SELECT AVG(T1.salary) FROM employee AS T1 INNER JOIN department AS T2 ON T1.department = T2.department_id WHERE T2.department_name = 'IT';
+"
+        CREATE TABLE sales (
+            sale_id INTEGER PRIMARY KEY,
+            product_name TEXT,
+            sale_date DATE,
+            quantity_sold INTEGER
+        );
+        ",List all products sold in 2021.,SELECT DISTINCT product_name FROM sales WHERE sale_date LIKE '2021%';
+"
+        CREATE TABLE student (
+            student_id INTEGER PRIMARY KEY,
+            student_name TEXT,
+            age INTEGER
+        );
+
+        CREATE TABLE enrollment (
+            enrollment_id INTEGER PRIMARY KEY,
+            student_id INTEGER,
+            course_id INTEGER,
+            semester TEXT,
+            FOREIGN KEY (student_id) REFERENCES student(student_id)
+        );
+
+        CREATE TABLE course (
+            course_id INTEGER PRIMARY KEY,
+            course_name TEXT
+        );
+        ",Find the courses in which students over 20 years old are enrolled.,SELECT T1.course_name FROM course AS T1 INNER JOIN enrollment AS T2 ON T1.course_id = T2.course_id INNER JOIN student AS T3 ON T2.student_id = T3.student_id WHERE T3.age > 20;
+"
+        CREATE TABLE customer (
+            customer_id INTEGER PRIMARY KEY,
+            customer_name TEXT,
+            city TEXT
+        );
+
+        CREATE TABLE order (
+            order_id INTEGER PRIMARY KEY,
+            order_date DATE,
+            customer_id INTEGER,
+            amount INTEGER,
+            FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+        );
+        ",List the total number of orders made by customers from 'New York'.,SELECT COUNT(T1.order_id) FROM order AS T1 INNER JOIN customer AS T2 ON T1.customer_id = T2.customer_id WHERE T2.city = 'New York';
+"
+        CREATE TABLE hospital (
+            hospital_id INTEGER PRIMARY KEY,
+            hospital_name TEXT,
+            location TEXT
+        );
+
+        CREATE TABLE patient (
+            patient_id INTEGER PRIMARY KEY,
+            patient_name TEXT,
+            admitted_date DATE,
+            hospital_id INTEGER,
+            FOREIGN KEY (hospital_id) REFERENCES hospital(hospital_id)
+        );
+        ",How many patients were admitted to hospitals in 'Los Angeles' after 2020?,SELECT COUNT(T1.patient_id) FROM patient AS T1 INNER JOIN hospital AS T2 ON T1.hospital_id = T2.hospital_id WHERE T2.location = 'Los Angeles' AND T1.admitted_date > '2020';
+"
+        CREATE TABLE teacher (
+            teacher_id INTEGER PRIMARY KEY,
+            teacher_name TEXT,
+            subject TEXT
+        );
+
+        CREATE TABLE class (
+            class_id INTEGER PRIMARY KEY,
+            class_name TEXT,
+            teacher_id INTEGER,
+            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+        );
+
+        CREATE TABLE student (
+            student_id INTEGER PRIMARY KEY,
+            student_name TEXT,
+            class_id INTEGER,
+            FOREIGN KEY (class_id) REFERENCES class(class_id)
+        );
+        ",List all teachers who have more than 20 students.,SELECT T1.teacher_name FROM teacher AS T1 INNER JOIN class AS T2 ON T1.teacher_id = T2.teacher_id INNER JOIN student AS T3 ON T2.class_id = T3.class_id GROUP BY T1.teacher_id HAVING COUNT(T3.student_id) > 20;
+"
+        CREATE TABLE restaurant (
+            restaurant_id INTEGER PRIMARY KEY,
+            restaurant_name TEXT,
+            city TEXT
+        );
+
+        CREATE TABLE review (
+            review_id INTEGER PRIMARY KEY,
+            review_date DATE,
+            restaurant_id INTEGER,
+            rating INTEGER,
+            FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id)
+        );
+        ",Find the restaurants with an average rating above 4.5.,SELECT T1.restaurant_name FROM restaurant AS T1 INNER JOIN review AS T2 ON T1.restaurant_id = T2.restaurant_id GROUP BY T1.restaurant_id HAVING AVG(T2.rating) > 4.5;
+"
+        CREATE TABLE flight (
+            flight_id INTEGER PRIMARY KEY,
+            airline TEXT,
+            departure_city TEXT,
+            arrival_city TEXT,
+            duration INTEGER
+        );
+        ",Which flights from 'New York' to 'Los Angeles' have a duration of less than 6 hours?,SELECT flight_id FROM flight WHERE departure_city = 'New York' AND arrival_city = 'Los Angeles' AND duration < 6;
+"
+        CREATE TABLE match (
+            match_id INTEGER PRIMARY KEY,
+            team1 TEXT,
+            team2 TEXT,
+            score_team1 INTEGER,
+            score_team2 INTEGER,
+            match_date DATE
+        );
+        ",Which teams scored more than 3 goals in any match?,SELECT team1 FROM match WHERE score_team1 > 3 UNION SELECT team2 FROM match WHERE score_team2 > 3;
+"
+        CREATE TABLE movie (
+            movie_id INTEGER PRIMARY KEY,
+            title TEXT,
+            release_year INTEGER,
+            genre TEXT
+        );
+
+        CREATE TABLE actor (
+            actor_id INTEGER PRIMARY KEY,
+            actor_name TEXT
+        );
+
+        CREATE TABLE movie_actor (
+            movie_id INTEGER,
+            actor_id INTEGER,
+            FOREIGN KEY (movie_id) REFERENCES movie(movie_id),
+            FOREIGN KEY (actor_id) REFERENCES actor(actor_id)
+        );
+        ",List all actors who acted in movies released before 2000.,SELECT T2.actor_name FROM movie_actor AS T1 INNER JOIN actor AS T2 ON T1.actor_id = T2.actor_id INNER JOIN movie AS T3 ON T1.movie_id = T3.movie_id WHERE T3.release_year < 2000;
+"
+        CREATE TABLE customer (
+            customer_id INTEGER PRIMARY KEY,
+            customer_name TEXT
+        );
+
+        CREATE TABLE invoice (
+            invoice_id INTEGER PRIMARY KEY,
+            customer_id INTEGER,
+            amount INTEGER,
+            date DATE,
+            FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+        );
+
+        CREATE TABLE payment (
+            payment_id INTEGER PRIMARY KEY,
+            invoice_id INTEGER,
+            payment_date DATE,
+            FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id)
+        );
+        ",Find customers who haven't made any payments.,SELECT T1.customer_name FROM customer AS T1 INNER JOIN invoice AS T2 ON T1.customer_id = T2.customer_id WHERE T2.invoice_id IS NULL;
+"
+        CREATE TABLE tournament (
+            tournament_id INTEGER PRIMARY KEY,
+            tournament_name TEXT
+        );
+
+        CREATE TABLE match (
+            match_id INTEGER PRIMARY KEY,
+            tournament_id INTEGER,
+            team1 TEXT,
+            team2 TEXT,
+            winner TEXT,
+            FOREIGN KEY (tournament_id) REFERENCES tournament(tournament_id)
+        );
+        ",List all tournaments where 'Team A' won more than 3 matches.,SELECT T1.tournament_name FROM tournament AS T1 INNER JOIN match AS T2 ON T1.tournament_id = T2.tournament_id WHERE T2.winner = 'Team A' GROUP BY T1.tournament_id HAVING COUNT(T2.match_id) > 3;
+"
+        CREATE TABLE product (
+            product_id INTEGER PRIMARY KEY,
+            product_name TEXT,
+            price INTEGER
+        );
+
+        CREATE TABLE order (
+            order_id INTEGER PRIMARY KEY,
+            product_id INTEGER,
+            quantity INTEGER,
+            FOREIGN KEY (product_id) REFERENCES product(product_id)
+        );
+        ",Find the total sales amount for each product.,SELECT SUM(T1.price * T2.quantity) FROM product AS T1 INNER JOIN order AS T2 ON T1.product_id = T2.product_id;
+"
+        CREATE TABLE bank_account (
+            account_id INTEGER PRIMARY KEY,
+            account_type TEXT,
+            balance INTEGER
+        );
+
+        CREATE TABLE transaction (
+            transaction_id INTEGER PRIMARY KEY,
+            account_id INTEGER,
+            transaction_date DATE,
+            amount INTEGER,
+            transaction_type TEXT,
+            FOREIGN KEY (account_id) REFERENCES bank_account(account_id)
+        );
+        ",List all accounts with a balance below 1000 after transactions in 2021.,SELECT T1.account_id FROM bank_account AS T1 INNER JOIN transaction AS T2 ON T1.account_id = T2.account_id WHERE T2.transaction_date LIKE '2021%' AND T1.balance < 1000;
+"
+        CREATE TABLE professor (
+            professor_id INTEGER PRIMARY KEY,
+            professor_name TEXT,
+            department TEXT
+        );
+
+        CREATE TABLE research_project (
+            project_id INTEGER PRIMARY KEY,
+            project_title TEXT,
+            department TEXT,
+            budget INTEGER
+        );
+        ",Find the average budget of research projects in the 'Physics' department.,SELECT AVG(budget) FROM research_project WHERE department = 'Physics';
+"
+        CREATE TABLE gym_member (
+            member_id INTEGER PRIMARY KEY,
+            member_name TEXT,
+            membership_start DATE
+        );
+
+        CREATE TABLE gym_activity (
+            activity_id INTEGER PRIMARY KEY,
+            activity_name TEXT
+        );
+
+        CREATE TABLE participation (
+            member_id INTEGER,
+            activity_id INTEGER,
+            participation_date DATE,
+            FOREIGN KEY (member_id) REFERENCES gym_member(member_id),
+            FOREIGN KEY (activity_id) REFERENCES gym_activity(activity_id)
+        );
+        ",List all gym members who participated in activities in 2021.,"SELECT T1.member_name FROM gym_member AS T1 INNER JOIN participation AS T2 ON T1.member_id = T2.member_id WHERE STRFTIME('%Y', T2.participation_date) = '2021';"
+"
+        CREATE TABLE library (
+            library_id INTEGER PRIMARY KEY,
+            library_name TEXT
+        );
+
+        CREATE TABLE book (
+            book_id INTEGER PRIMARY KEY,
+            title TEXT,
+            library_id INTEGER,
+            FOREIGN KEY (library_id) REFERENCES library(library_id)
+        );
+        ",Find all libraries that have more than 1000 books.,SELECT T1.library_name FROM library AS T1 INNER JOIN book AS T2 ON T1.library_id = T2.library_id GROUP BY T1.library_id HAVING COUNT(T2.book_id) > 1000;
+"
+        CREATE TABLE employee (
+            employee_id INTEGER PRIMARY KEY,
+            name TEXT,
+            department_id INTEGER,
+            salary INTEGER,
+            hire_date DATE
+        );
+
+        CREATE TABLE department (
+            department_id INTEGER PRIMARY KEY,
+            department_name TEXT
+        );
+        ",List employees who have been working in the 'HR' department for more than 5 years.,"SELECT T1.name FROM employee AS T1 INNER JOIN department AS T2 ON T1.department_id = T2.department_id WHERE T2.department_name = 'HR' AND strftime('%Y', 'now') - strftime('%Y', T1.hire_date) > 5;"
+"
+        CREATE TABLE client (
+            client_id INTEGER PRIMARY KEY,
+            client_name TEXT
+        );
+
+        CREATE TABLE project (
+            project_id INTEGER PRIMARY KEY,
+            client_id INTEGER,
+            project_name TEXT,
+            start_date DATE,
+            end_date DATE,
+            FOREIGN KEY (client_id) REFERENCES client(client_id)
+        );
+        ",List all clients who have more than 3 ongoing projects.,SELECT T1.client_name FROM client AS T1 INNER JOIN project AS T2 ON T1.client_id = T2.client_id WHERE T2.end_date IS NULL GROUP BY T1.client_name HAVING COUNT(T2.project_id) > 3;
